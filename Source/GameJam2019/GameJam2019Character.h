@@ -24,7 +24,10 @@ public:
 	/** Returns CursorToWorld subobject **/
 	FORCEINLINE class UDecalComponent* GetCursorToWorld() { return CursorToWorld; }
 
+protected:
 	virtual void NotifyActorBeginOverlap(AActor* Other) override;
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
 	/** Top down camera */
@@ -41,5 +44,22 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Target", meta = (AllowPrivateAccess = "true"))
 	class UVectorFieldComponent* TargetPosition;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+		float InputMagnitude;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+		float InputX;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+		float InputZ;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Shooting", meta = (AllowPrivateAccess = "true"))
+		bool bIsShooting;
+
+	void MoveForward(float Value);
+	void MoveRight(float Value);
+	FRotator CalculateRotation(FVector CursorLocation);
+	void SetRotation(FRotator NewRotation);
 };
 

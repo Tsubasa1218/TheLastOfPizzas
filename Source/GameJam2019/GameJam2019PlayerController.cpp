@@ -17,10 +17,10 @@ void AGameJam2019PlayerController::PlayerTick(float DeltaTime)
 	Super::PlayerTick(DeltaTime);
 
 	// keep updating the destination every tick while desired
-	if (bMoveToMouseCursor)
+	/*if (bMoveToMouseCursor)
 	{
 		MoveToMouseCursor();
-	}
+	}*/
 }
 
 void AGameJam2019PlayerController::SetupInputComponent()
@@ -28,8 +28,9 @@ void AGameJam2019PlayerController::SetupInputComponent()
 	// set up gameplay key bindings
 	Super::SetupInputComponent();
 
-	InputComponent->BindAction("SetDestination", IE_Pressed, this, &AGameJam2019PlayerController::OnSetDestinationPressed);
-	InputComponent->BindAction("SetDestination", IE_Released, this, &AGameJam2019PlayerController::OnSetDestinationReleased);
+	/*InputComponent->BindAction("SetDestination", IE_Pressed, this, &AGameJam2019PlayerController::OnSetDestinationPressed);
+	InputComponent->BindAction("SetDestination", IE_Released, this, &AGameJam2019PlayerController::OnSetDestinationReleased);*/
+
 }
 
 

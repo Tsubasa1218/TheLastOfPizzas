@@ -5,6 +5,7 @@
 #include "Components/VectorFieldComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Target.h"
 // Sets default values
 AEnemy::AEnemy()
@@ -17,13 +18,17 @@ AEnemy::AEnemy()
 
 	GetCapsuleComponent()->bGenerateOverlapEvents = true;
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+
+	MinSpeed = 200.f;
+	MaxSpeed = 400.f;
 }
 
 // Called when the game starts or when spawned
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	float speed = FMath::FRandRange(MinSpeed, MaxSpeed);
+	GetCharacterMovement()->MaxWalkSpeed = speed;
 }
 
 // Called every frame

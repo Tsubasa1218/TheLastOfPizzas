@@ -12,6 +12,7 @@
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Materials/Material.h"
 #include "Components/VectorFieldComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Target.h"
 
 AGameJam2019Character::AGameJam2019Character()
@@ -78,9 +79,26 @@ void AGameJam2019Character::Tick(float DeltaSeconds)
 			FRotator CursorR = CursorFV.Rotation();
 			CursorToWorld->SetWorldLocation(TraceHitResult.Location);
 			CursorToWorld->SetWorldRotation(CursorR);
+			
+			FRotator Rotation = CalculateRotation(TraceHitResult.Location);
+			SetActorRotation(Rotation);
 		}
 	}
+
+	const float X = FGenericPlatformMath::Abs(InputX);
+	const float Z = FGenericPlatformMath::Abs(InputZ);
+	InputMagnitude = FMath::Clamp(X + Z, 0.f, 1.f);
+
 }
+
+void AGameJam2019Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	check(PlayerInputComponent);
+
+	PlayerInputComponent->BindAxis("MoveForward", this, &AGameJam2019Character::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &AGameJam2019Character::MoveRight);
+}
+
 
 void AGameJam2019Character::NotifyActorBeginOverlap(AActor* Other)
 {
@@ -90,4 +108,44 @@ void AGameJam2019Character::NotifyActorBeginOverlap(AActor* Other)
 		if (Target->isPickable())
 			Target->WasCollected(this->TargetPosition);
 	}
+}
+
+void AGameJam2019Character::MoveForward(float Value) {
+	InputZ = Value;
+
+	if (Controller != NULL && Value != 0.0f) {
+		const FRotator Rotation = GetActorRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+
+		AddMovementInput(Direction, Value);
+	}
+}
+
+void AGameJam2019Character::MoveRight(float Value) {
+	InputX = Value;
+
+	if (Controller != NULL && Value != 0.0f) {
+
+		const FRotator Rotation = GetActorRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		AddMovementInput(Direction, Value);
+	}
+}
+
+FRotator AGameJam2019Character::CalculateRotation(FVector CursorLocation) {
+
+	const FVector CapsuleLocation = GetActorLocation();
+
+	const FRotator DesiredDirection = (CursorLocation - CapsuleLocation).ToOrientationRotator();
+
+	return FRotator(0.f, DesiredDirection.Yaw, 0.f);
+}
+
+void AGameJam2019Character::SetRotation(FRotator NewRotation) {
+	GetCapsuleComponent()->SetWorldRotation(NewRotation);
 }
